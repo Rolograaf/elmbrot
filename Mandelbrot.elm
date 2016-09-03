@@ -1,8 +1,9 @@
-module Mandelbrot exposing (Model, init, view)
+module Mandelbrot exposing (Model, init, computeCell, view)
 
 import Dict exposing (Dict)
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (..)
+import Complex exposing (Complex)
 
 
 type alias Point =
@@ -20,11 +21,56 @@ init : Int -> Model
 init size =
     { width = size
     , height = size
-    , computed =
-        Dict.empty
-            |> Dict.insert ( 5, 5 ) 1
-            |> Dict.insert ( 6, 5 ) 1
+    , computed = Dict.empty
     }
+
+
+calculate : Int -> Complex -> Int -> Complex -> Maybe Int
+calculate maxIterations c iterations z =
+    let
+        -- z' = z^2 + c
+        z' =
+            Complex.mult z z
+                |> Complex.add c
+    in
+        if iterations >= maxIterations then
+            Nothing
+        else if Complex.abs z' >= 2 then
+            Just iterations
+        else
+            calculate maxIterations c (iterations + 1) z'
+
+
+computeCell : Point -> Model -> Model
+computeCell ( row, col ) model =
+    let
+        c =
+            Complex.complex
+                (2 * toFloat col / toFloat model.width)
+                (2 * toFloat row / toFloat model.height)
+
+        value =
+            calculate 100 c 0 c
+                |> Debug.log (toString c)
+    in
+        case value of
+            Just iterations ->
+                { model
+                    | computed = Dict.insert ( col, row ) iterations model.computed
+                }
+
+            Nothing ->
+                { model
+                    | computed = Dict.remove ( col, row ) model.computed
+                }
+
+
+
+-- the Mandelbrot formula is an iteration from
+--  z = z^2 + c
+-- in complex numbers
+-- and this will go to infiniti (proven when result gets larger than 2) or remain a finite value,
+-- the color is black when finite or based on the amount of iterations to get to 2
 
 
 view : Model -> Html msg
