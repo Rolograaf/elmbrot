@@ -9,8 +9,12 @@ Today we make a Mandelbrot fractal viewer, do incremental loading with Cmds, and
 # Difference
 
 - did not do the incremental loading via cmd, since it's performance proved to be disappointing (without optimizing)
+- did not do burning ship fractal
+- implemented the PR of @jwjones and zoomViewport seems to be working
 
-# Future work
+![elmbrot zoomed image ](elmbrot.gif)
+
+# $ Future work
 
 - Extract a grid-rendering package
 - Smooth coloring <https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_.28smooth.29_coloring>

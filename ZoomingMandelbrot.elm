@@ -31,7 +31,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ Mandelbrot.view model
-        , button [ onClick (ZoomToward ( 30, 30 )) ]
-            [ text "Zoom" ]
+        [ Mandelbrot.view ZoomToward model
+          -- , button [ onClick (ZoomToward ( 30, 30 )) ]
+          --     [ text "Zoom" ]
         ]

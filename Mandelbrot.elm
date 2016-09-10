@@ -12,6 +12,7 @@ module Mandelbrot
 import Dict exposing (Dict)
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Complex exposing (Complex)
 
 
@@ -130,16 +131,20 @@ computeAll model =
 -- the color is black when finite or based on the amount of iterations to get to 2
 
 
-view : Model -> Html msg
-view model =
+view : (( Int, Int ) -> msg) -> Model -> Html msg
+view onCLickMsg model =
     div [ style [ ( "padding", "8px" ) ] ]
-        (List.map (viewRow model) [0..model.height])
+        (List.map (viewRow onCLickMsg model) [0..model.height])
 
 
-viewRow : Model -> Int -> Html msg
-viewRow model row =
-    div [ style [ ( "height", "2px" ) ] ]
-        (List.map (viewCell model row) [0..model.width])
+viewRow : (( Int, Int ) -> msg) -> Model -> Int -> Html msg
+viewRow onCLickMsg model row =
+    div
+        [ style
+            [ ( "height", "2px" )
+            ]
+        ]
+        (List.map (viewCell onCLickMsg model row) [0..model.width])
 
 
 determineColor : Int -> String
@@ -160,8 +165,8 @@ determineColor iterations =
             "white"
 
 
-viewCell : Model -> Int -> Int -> Html msg
-viewCell model row col =
+viewCell : (( Int, Int ) -> msg) -> Model -> Int -> Int -> Html msg
+viewCell onClickMsg model row col =
     let
         color =
             Dict.get ( col, row ) model.computed
@@ -172,8 +177,12 @@ viewCell model row col =
             [ style
                 [ ( "width", "2px" )
                 , ( "height", "2px" )
+                , ( "line-height", "2px" )
                 , ( "background-color", color )
                 , ( "display", "inline-block" )
+                , ( "border", "none" )
+                , ( "vertical-align", "top" )
                 ]
+            , onClick (onClickMsg ( col, row ))
             ]
             []
